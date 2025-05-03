@@ -2,44 +2,30 @@ let allStocks = [];
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchLiveData();
-  setInterval(fetchLiveData, 60000);
+  setInterval(fetchLiveData, 60000); // refresh every 60s
 });
 
 function fetchLiveData() {
-  const proxy = "https://corsproxy.io/?";
-  const yahooUrl = "https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_gainers&count=25";
-  const fullUrl = proxy + encodeURIComponent(yahooUrl);
+  const url = "https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=Gayp7WsTkSo7KKUXDC5QnoIQZr903eU5";
 
-  fetch(fullUrl)
+  fetch(url)
     .then(res => res.json())
     .then(data => {
-      const results = data.finance?.result?.[0]?.quotes || [];
-      if (results.length === 0) throw new Error("Empty results from Yahoo");
-
-      allStocks = results.map(stock => ({
-        ticker: stock.symbol,
-        price: stock.regularMarketPrice || 0,
-        gain: parseFloat(stock.regularMarketChangePercent?.toFixed(2)) || 0,
-        volume: stock.regularMarketVolume || 0,
-        avgVol: stock.averageDailyVolume3Month || 1
-      }));
+      if (!data || data.length === 0) throw new Error("Empty or invalid response from FMP");
+      allStocks = data.map(stock => {
+        return {
+          ticker: stock.symbol,
+          price: stock.price || 0,
+          gain: parseFloat(stock.changesPercentage?.replace('%', '')) || 0,
+          volume: stock.volume || 1,
+          avgVol: stock.avgVolume || 1
+        };
+      });
       applyFilter();
     })
     .catch(err => {
-      console.error("Live data failed, loading fallback", err);
-      loadMockData(); // fallback to working mock data
-      applyFilter();
+      console.error("FMP fetch error:", err);
     });
-}
-
-function loadMockData() {
-  allStocks = [
-    { ticker: "FRGT", price: 0.98, gain: 35, volume: 32000000, avgVol: 8000000 },
-    { ticker: "KIDZ", price: 2.9, gain: 45, volume: 5000000, avgVol: 2000000 },
-    { ticker: "VRAX", price: 1.7, gain: 12, volume: 1500000, avgVol: 900000 },
-    { ticker: "TOP", price: 4.4, gain: 28, volume: 8000000, avgVol: 3000000 },
-    { ticker: "SNTI", price: 2.4, gain: 18, volume: 2600000, avgVol: 1200000 }
-  ];
 }
 
 function applyFilter() {
