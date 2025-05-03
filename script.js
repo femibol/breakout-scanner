@@ -1,25 +1,29 @@
-let allStocks = [];
+et allStocks = [
+  { ticker: "FRGT", price: 0.98, gain: 35, volume: 32000000, avgVol: 8000000 },
+  { ticker: "KIDZ", price: 2.9, gain: 45, volume: 5000000, avgVol: 2000000 },
+  { ticker: "VRAX", price: 1.7, gain: 12, volume: 1500000, avgVol: 900000 },
+  { ticker: "TOP", price: 4.4, gain: 28, volume: 8000000, avgVol: 3000000 },
+  { ticker: "SNTI", price: 2.4, gain: 18, volume: 2600000, avgVol: 1200000 },
+  { ticker: "GME", price: 20.5, gain: 11.2, volume: 3400000, avgVol: 2000000 },
+  { ticker: "AMC", price: 9.3, gain: 13.7, volume: 4200000, avgVol: 2800000 },
+  { ticker: "AI", price: 28.9, gain: 14.1, volume: 3900000, avgVol: 3100000 },
+  { ticker: "PLTR", price: 12.2, gain: 9.5, volume: 5300000, avgVol: 4600000 },
+  { ticker: "BBAI", price: 1.85, gain: 22.6, volume: 1900000, avgVol: 1000000 },
+  { ticker: "NVDA", price: 620.4, gain: 3.7, volume: 22000000, avgVol: 18000000 },
+  { ticker: "TSLA", price: 178.5, gain: 5.9, volume: 31000000, avgVol: 25000000 },
+  { ticker: "MSFT", price: 404.7, gain: 2.8, volume: 15000000, avgVol: 12000000 },
+  { ticker: "AMZN", price: 185.6, gain: 4.3, volume: 18000000, avgVol: 16000000 },
+  { ticker: "META", price: 480.2, gain: 2.1, volume: 14000000, avgVol: 10000000 },
+  { ticker: "GOOG", price: 150.1, gain: 3.4, volume: 9000000, avgVol: 8800000 },
+  { ticker: "SOFI", price: 6.9, gain: 7.1, volume: 7800000, avgVol: 5000000 },
+  { ticker: "RIVN", price: 10.4, gain: 6.2, volume: 6100000, avgVol: 4500000 },
+  { ticker: "LCID", price: 3.2, gain: 8.3, volume: 4600000, avgVol: 4200000 },
+  { ticker: "BBBYQ", price: 0.33, gain: 15.2, volume: 990000, avgVol: 600000 }
+];
 
 document.addEventListener("DOMContentLoaded", () => {
-  fetchData();
-  setInterval(fetchData, 60000); // refresh every 60s
+  applyFilter();
 });
-
-function fetchData() {
-  fetch("https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=day_gainers&count=25")
-    .then(res => res.json())
-    .then(data => {
-      const results = data.finance.result[0].quotes;
-      allStocks = results.map(stock => ({
-        ticker: stock.symbol,
-        price: stock.regularMarketPrice || 0,
-        gain: stock.regularMarketChangePercent?.toFixed(2) || 0,
-        volume: stock.regularMarketVolume || 0,
-        avgVol: stock.averageDailyVolume3Month || 1
-      }));
-      applyFilter();
-    });
-}
 
 function applyFilter() {
   const min = parseFloat(document.getElementById("minPrice").value);
