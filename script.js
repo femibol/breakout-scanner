@@ -1,4 +1,4 @@
-et allStocks = [
+Let allStocks = [
   { ticker: "FRGT", price: 0.98, gain: 35, volume: 32000000, avgVol: 8000000 },
   { ticker: "KIDZ", price: 2.9, gain: 45, volume: 5000000, avgVol: 2000000 },
   { ticker: "VRAX", price: 1.7, gain: 12, volume: 1500000, avgVol: 900000 },
