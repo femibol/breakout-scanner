@@ -1,4 +1,5 @@
 let allStocks = [];
+let top3Positions = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchLiveData();
@@ -72,9 +73,29 @@ function updateTable(stocks) {
 function updateRace(stocks) {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
-  stocks.sort((a, b) => b.gain - a.gain).forEach(stock => {
+  const top3 = stocks.sort((a, b) => b.gain - a.gain).slice(0, 3);
+
+  top3.forEach(stock => {
     const bar = document.createElement("div");
-    bar.textContent = `${stock.ticker} (${stock.gain}%)`;
+    bar.classList.add("race-bar");
+    const ticker = stock.ticker;
+
+    if (!top3Positions[ticker]) {
+      top3Positions[ticker] = {
+        entryPrice: stock.price,
+        shares: 5000,
+        lastSeen: Date.now()
+      };
+    }
+
+    const entry = top3Positions[ticker].entryPrice;
+    const shares = top3Positions[ticker].shares;
+    const profit = ((stock.price - entry) * shares).toFixed(2);
+
+    bar.innerHTML = `
+      <strong>${ticker}</strong> (${stock.gain}%) - 
+      <span style='background:yellow; color:black; padding:2px 6px;'>$${profit} P/L</span>
+    `;
     bar.style.width = `${Math.min(stock.gain, 100)}%`;
     raceTrack.appendChild(bar);
   });
