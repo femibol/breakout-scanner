@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Breakout Scanner</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Breakout Scanner</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>US Market Breakout Scanner</h1>
+  <h1>Live Breakout Scanner + Race Mode</h1>
+
+  <div id="filters">
+    <label>Min Price: <input type="number" id="minPrice" value="0.5" step="0.01"></label>
+    <label>Max Price: <input type="number" id="maxPrice" value="10" step="0.01"></label>
+    <button onclick="applyFilter()">Apply Filter</button>
+  </div>
+
+  <section id="race-container">
+    <h2>Momentum Race: Top Gainers</h2>
+    <div id="race-track"></div>
+  </section>
+
   <table id="scanner-table">
     <thead>
       <tr>
+        <th>Rank</th>
         <th>Ticker</th>
         <th>Price</th>
         <th>% Gain</th>
         <th>Volume</th>
         <th>Avg Volume</th>
-        <th>Rel Volume</th>
-        <th>Entry Price</th>
+        <th>Rel Vol</th>
+        <th>Entry</th>
         <th>Target 1</th>
         <th>Target 2</th>
-        <th>Stop Loss</th>
-        <th>Float</th>
-        <th>Sector</th>
+        <th>Stop</th>
         <th>Status</th>
       </tr>
     </thead>
-    <tbody>
-      <!-- Data will be inserted here -->
-    </tbody>
+    <tbody></tbody>
   </table>
+
   <script src="script.js"></script>
 </body>
 </html>

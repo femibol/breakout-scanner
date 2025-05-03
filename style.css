@@ -1,31 +1,56 @@
 body {
   font-family: Arial, sans-serif;
+  background: #f4f4f4;
   padding: 20px;
-  background-color: #f4f4f4;
 }
 
-h1 {
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
+
+#filters {
   text-align: center;
   margin-bottom: 20px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
+#filters input {
+  width: 80px;
+  margin: 0 10px;
 }
 
-th, td {
-  padding: 8px 12px;
+#scanner-table, #race-track {
+  width: 100%;
+  margin: 20px auto;
+  background: #fff;
+  border-collapse: collapse;
+}
+
+#scanner-table th, #scanner-table td {
+  padding: 8px;
   text-align: center;
   border: 1px solid #ccc;
 }
 
 thead {
-  background-color: #333;
+  background: #333;
   color: #fff;
 }
 
-tbody tr:hover {
-  background-color: #f1f1f1;
+tr.breakout {
+  background-color: #d4edda;
+}
+
+tr.pre-breakout {
+  background-color: #fff3cd;
+}
+
+#race-track div {
+  background: #2196F3;
+  color: #fff;
+  padding: 8px;
+  margin: 5px 0;
+  width: 0%;
+  white-space: nowrap;
+  transition: width 0.5s ease;
 }
