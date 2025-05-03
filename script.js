@@ -1,9 +1,17 @@
+
 let allStocks = [];
+let priceHistory = {};  // { "AAPL": [{time: epoch, price: 123.45}, ...] }
 let top3Positions = {};
+let snapshotLog = [];
+
+const SNAPSHOT_INTERVAL = 5 * 60 * 1000; // 5 min
+const SNAPSHOT_LIMIT = 24 * 60 / 5; // max 24h worth
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchLiveData();
-  setInterval(fetchLiveData, 60000); // refresh every 60s
+  setInterval(fetchLiveData, 60000);
+  setInterval(storeSnapshot, SNAPSHOT_INTERVAL);
+  populateSnapshotDropdown();
 });
 
 function fetchLiveData() {
@@ -12,21 +20,45 @@ function fetchLiveData() {
   fetch(url)
     .then(res => res.json())
     .then(data => {
-      if (!data || data.length === 0) throw new Error("Empty or invalid response from FMP");
-      allStocks = data.map(stock => {
+      const timestamp = Date.now();
+      allStocks = data.map(s => {
+        if (!priceHistory[s.symbol]) priceHistory[s.symbol] = [];
+        priceHistory[s.symbol].push({ time: timestamp, price: s.price });
+        if (priceHistory[s.symbol].length > SNAPSHOT_LIMIT) {
+          priceHistory[s.symbol].shift(); // keep history limited
+        }
         return {
-          ticker: stock.symbol,
-          price: stock.price || 0,
-          gain: parseFloat(stock.changesPercentage?.replace('%', '')) || 0,
-          volume: stock.volume || 1,
-          avgVol: stock.avgVolume || 1
+          ticker: s.symbol,
+          price: s.price,
+          open: s.open,
+          gain: calcIntervalGain(s.symbol),
+          volume: s.volume,
+          avgVol: s.avgVolume || 1
         };
       });
       applyFilter();
     })
-    .catch(err => {
-      console.error("FMP fetch error:", err);
-    });
+    .catch(err => console.error("Fetch error:", err));
+}
+
+function calcIntervalGain(ticker) {
+  const interval = document.getElementById("intervalSelect").value;
+  const now = Date.now();
+  let pastTime = now;
+
+  switch (interval) {
+    case "15": pastTime -= 15 * 60 * 1000; break;
+    case "30": pastTime -= 30 * 60 * 1000; break;
+    case "60": pastTime -= 60 * 60 * 1000; break;
+    default: return 0;
+  }
+
+  const history = priceHistory[ticker] || [];
+  const pastPoint = history.find(p => p.time <= pastTime);
+  if (!pastPoint) return 0;
+
+  const change = ((priceHistory[ticker].slice(-1)[0].price - pastPoint.price) / pastPoint.price) * 100;
+  return parseFloat(change.toFixed(2));
 }
 
 function applyFilter() {
@@ -83,8 +115,7 @@ function updateRace(stocks) {
     if (!top3Positions[ticker]) {
       top3Positions[ticker] = {
         entryPrice: stock.price,
-        shares: 5000,
-        lastSeen: Date.now()
+        shares: 5000
       };
     }
 
@@ -99,4 +130,81 @@ function updateRace(stocks) {
     bar.style.width = `${Math.min(stock.gain, 100)}%`;
     raceTrack.appendChild(bar);
   });
+}
+
+function storeSnapshot() {
+  const snapshot = {
+    time: new Date().toISOString(),
+    data: allStocks.slice(0, 20)
+  };
+  snapshotLog.push(snapshot);
+  localStorage.setItem("snapshots", JSON.stringify(snapshotLog));
+  populateSnapshotDropdown();
+}
+
+function populateSnapshotDropdown() {
+  const dropdown = document.getElementById("snapshotSelect");
+  const saved = JSON.parse(localStorage.getItem("snapshots") || "[]");
+  snapshotLog = saved;
+  dropdown.innerHTML = "";
+  saved.forEach((snap, idx) => {
+    const option = document.createElement("option");
+    option.value = idx;
+    option.text = snap.time;
+    dropdown.appendChild(option);
+  });
+}
+
+function toggleReplay() {
+  const panel = document.getElementById("replay-controls");
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+}
+
+function playReplay() {
+  const idx = document.getElementById("snapshotSelect").value;
+  const snap = snapshotLog[idx];
+  if (!snap) return;
+  updateTable(snap.data);
+  updateRace(snap.data);
+}
+
+
+function playReplay() {
+  const idx = document.getElementById("snapshotSelect").value;
+  const snap = snapshotLog[idx];
+  if (!snap) return;
+
+  let step = 0;
+  const interval = setInterval(() => {
+    if (step >= snapshotLog.length) {
+      clearInterval(interval);
+      return;
+    }
+    const snapStep = snapshotLog[step];
+    updateTable(snapStep.data);
+    updateRace(snapStep.data);
+    step++;
+  }, 5000); // 5 seconds per frame
+}
+
+function exportToCSV() {
+  const saved = JSON.parse(localStorage.getItem("snapshots") || "[]");
+  if (!saved.length) return alert("No snapshot data to export.");
+
+  let csv = "Time,Ticker,Price,Change (%),Volume,AvgVolume\n";
+
+  saved.forEach(snap => {
+    const time = snap.time;
+    snap.data.forEach(stock => {
+      csv += `${time},${stock.ticker},${stock.price},${stock.gain},${stock.volume},${stock.avgVol}\n`;
+    });
+  });
+
+  const blob = new Blob([csv], {{ type: 'text/csv;charset=utf-8;' }});
+  const link = document.createElement("a");
+  link.setAttribute("href", URL.createObjectURL(blob));
+  link.setAttribute("download", "race_history.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
