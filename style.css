@@ -1,1 +1,48 @@
-/* Use your existing style.css file here */
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 20px;
+}
+h1, h2 {
+  text-align: center;
+  color: #333;
+}
+#filters {
+  text-align: center;
+  margin-bottom: 20px;
+}
+#filters input, #filters select {
+  margin: 0 10px;
+  padding: 4px;
+}
+#scanner-table, #race-track {
+  width: 100%;
+  margin: 20px auto;
+  background: #fff;
+  border-collapse: collapse;
+}
+#scanner-table th, #scanner-table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+thead {
+  background: #333;
+  color: #fff;
+}
+tr.breakout {
+  background-color: #d4edda;
+}
+tr.pre-breakout {
+  background-color: #fff3cd;
+}
+#race-track div {
+  background: #2196F3;
+  color: #fff;
+  padding: 8px;
+  margin: 5px 0;
+  width: 0%;
+  white-space: nowrap;
+  transition: width 0.5s ease;
+}
