@@ -7,6 +7,8 @@ const mockData = [
   { ticker: "PLTR", open: 10.00, close: 13.50, gain: 35.0 }
 ];
 
+const barColors = ["#ffd700", "#c0c0c0", "#cd7f32", "#4caf50", "#2196f3"];
+
 let userInteracted = false;
 document.addEventListener("click", () => { userInteracted = true; });
 
@@ -21,14 +23,14 @@ function renderMockRace() {
   raceTrack.innerHTML = "";
   mockData.sort((a, b) => b.gain - a.gain);
 
-  mockData.forEach(stock => {
+  mockData.forEach((stock, index) => {
     const entryPrice = stock.open;
     const shares = 5000;
     const pl = ((stock.close - entryPrice) * shares).toFixed(2);
     const bar = document.createElement("div");
     bar.className = "race-bar";
     bar.style.width = "0%";
-    bar.style.background = "#4caf50";
+    bar.style.background = barColors[index] || "#607d8b";
     bar.style.color = "#fff";
     bar.style.padding = "10px";
     bar.style.margin = "5px 0";
