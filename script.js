@@ -1,6 +1,11 @@
 
-const apiKey = "Gayp7WsTkSo7KKUXDC5QnoIQZr903eU5";
-const tickers = ['FRGT', 'KIDZ', 'AAPL', 'MSFT', 'GOOGL'];
+const mockData = [
+  { ticker: "FRGT", open: 1.23, close: 2.10, gain: 70.7 },
+  { ticker: "KIDZ", open: 0.88, close: 1.44, gain: 63.6 },
+  { ticker: "BBBYQ", open: 0.23, close: 0.36, gain: 56.5 },
+  { ticker: "AMC", open: 3.50, close: 5.10, gain: 45.7 },
+  { ticker: "PLTR", open: 10.00, close: 13.50, gain: 35.0 }
+];
 
 let userInteracted = false;
 document.addEventListener("click", () => { userInteracted = true; });
@@ -11,81 +16,34 @@ function playSound() {
   audio.play().catch(err => console.log("Blocked by browser:", err));
 }
 
-function toggleReplay() {
-  const controls = document.getElementById("replay-controls");
-  controls.style.display = controls.style.display === "none" ? "block" : "none";
-}
-
-function debug(message) {
-  let debugBox = document.getElementById("debug-log");
-  if (!debugBox) {
-    debugBox = document.createElement("div");
-    debugBox.id = "debug-log";
-    debugBox.style.background = "#222";
-    debugBox.style.color = "#0f0";
-    debugBox.style.padding = "10px";
-    debugBox.style.fontFamily = "monospace";
-    debugBox.style.margin = "10px";
-    debugBox.style.whiteSpace = "pre-wrap";
-    document.body.insertBefore(debugBox, document.body.firstChild);
-  }
-  debugBox.innerText = message + "\n" + debugBox.innerText;
-}
-
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function fetchLastTradingDayGainers() {
-  const results = [];
-  for (let i = 0; i < tickers.length; i++) {
-    const symbol = tickers[i];
-    const url = `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?serietype=line&timeseries=2&apikey=${apiKey}`;
-    try {
-      const res = await fetch(url);
-      const json = await res.json();
-      const prices = json.historical;
-      if (prices && prices.length >= 2) {
-        const gain = ((prices[0].close - prices[1].close) / prices[1].close * 100).toFixed(2);
-        results.push({
-          ticker: symbol,
-          open: prices[1].close,
-          close: prices[0].close,
-          gain: parseFloat(gain)
-        });
-      }
-    } catch (err) {
-      debug("Error fetching " + symbol + ": " + err);
-    }
-    await delay(3000);
-  }
-
-  results.sort((a, b) => b.gain - a.gain);
-  renderReplayRace(results);
-}
-
-function renderReplayRace(stocks) {
+function renderMockRace() {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
-  stocks.forEach(stock => {
+  mockData.sort((a, b) => b.gain - a.gain);
+
+  mockData.forEach(stock => {
+    const entryPrice = stock.open;
+    const shares = 5000;
+    const pl = ((stock.close - entryPrice) * shares).toFixed(2);
     const bar = document.createElement("div");
-    const gainWidth = Math.min(stock.gain, 100);
+    bar.className = "race-bar";
     bar.style.width = "0%";
     bar.style.background = "#4caf50";
     bar.style.color = "#fff";
     bar.style.padding = "10px";
     bar.style.margin = "5px 0";
-    bar.style.transition = "width 0.8s ease";
     bar.style.borderRadius = "5px";
-    bar.innerText = `${stock.ticker} - Gain: ${stock.gain}% | Open: $${stock.open} → Close: $${stock.close}`;
+    bar.style.transition = "width 1s ease";
+    bar.innerText = `${stock.ticker} - Gain: ${stock.gain}% | P/L: $${pl}`;
     raceTrack.appendChild(bar);
     setTimeout(() => {
-      bar.style.width = gainWidth + "%";
-    }, 100);
+      bar.style.width = Math.min(stock.gain, 100) + "%";
+    }, 200);
   });
+
+  playSound();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  debug("Lite Replay Mode: 5 tickers with delay");
-  fetchLastTradingDayGainers();
+  renderMockRace();
 });
