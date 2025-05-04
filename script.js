@@ -7,8 +7,6 @@ const mockData = [
   { ticker: "PLTR", open: 10.00, close: 13.50, gain: 35.0 }
 ];
 
-const barColors = ["#FFD700", "#C0C0C0", "#CD7F32", "#4CAF50", "#2196F3"];
-
 let userInteracted = false;
 document.addEventListener("click", () => { userInteracted = true; });
 
@@ -21,7 +19,6 @@ function playSound() {
 function renderMockRace() {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
-
   mockData.sort((a, b) => b.gain - a.gain);
 
   let totalPL = 0;
@@ -32,20 +29,41 @@ function renderMockRace() {
     const pl = ((stock.close - entryPrice) * shares).toFixed(2);
     totalPL += parseFloat(pl);
 
+    const row = document.createElement("div");
+    row.setAttribute("style", `
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      background-color: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 4px rgba(0,0,0,0.5);
+    `);
+
+    const label = document.createElement("div");
+    label.textContent = `${stock.ticker} | ${stock.gain}% | $${pl}`;
+    label.setAttribute("style", `
+      width: 120px;
+      padding: 10px;
+      font-weight: 600;
+      font-family: monospace;
+      font-size: 14px;
+      color: #cfcfcf;
+      background: #2c2c2c;
+    `);
+
     const bar = document.createElement("div");
+    bar.textContent = "";
     bar.setAttribute("style", `
       width: 0%;
-      background-color: ${barColors[index] || "#607d8b"};
-      color: #fff;
-      padding: 10px;
-      margin: 5px 0;
-      border-radius: 5px;
+      height: 32px;
+      background: linear-gradient(90deg, #4caf50, #2196f3);
       transition: width 1s ease;
-      font-weight: bold;
-      font-family: monospace;
     `);
-    bar.innerText = `${stock.ticker} - Gain: ${stock.gain}% | P/L: $${pl}`;
-    raceTrack.appendChild(bar);
+
+    row.appendChild(label);
+    row.appendChild(bar);
+    raceTrack.appendChild(row);
 
     setTimeout(() => {
       bar.style.width = Math.min(stock.gain, 100) + "%";
@@ -54,13 +72,17 @@ function renderMockRace() {
 
   const summary = document.createElement("div");
   summary.setAttribute("style", `
-    margin-top: 20px;
-    color: #4fc3f7;
-    font-weight: bold;
+    margin-top: 25px;
+    background: #292929;
+    padding: 10px 20px;
     font-size: 18px;
     font-family: sans-serif;
+    color: #8de88d;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 0 6px #4caf50;
   `);
-  summary.innerText = `📈 Total Gain Across All Positions: $${totalPL.toFixed(2)}`;
+  summary.innerText = `📈 Total Realized P/L: $${totalPL.toFixed(2)}`;
   raceTrack.appendChild(summary);
 
   playSound();
