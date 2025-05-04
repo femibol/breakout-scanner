@@ -62,13 +62,13 @@ function renderRace(data) {
     const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
     const label = document.createElement("div");
     label.className = "race-label";
-    label.innerHTML = \`
+    label.innerHTML = `
       <span onmouseover="showChart('${tvSymbol}', this)" onmouseout="hideChart()">
         <a href="https://www.tradingview.com/chart/?symbol=${tvSymbol}" 
         target="_blank" rel="noopener noreferrer">${stock.ticker}</a>
       </span>
       | ${stock.gain.toFixed(1)}% | $${pl}
-    \`;
+    `;
 
     const bar = document.createElement("div");
     bar.className = "race-bar";
@@ -94,7 +94,7 @@ function renderRace(data) {
 
   const summary = document.createElement("div");
   summary.className = "total-gain";
-  summary.innerText = \`📈 Total Realized P/L: $\${totalPL.toFixed(2)}\`;
+  summary.innerText = `📈 Total Realized P/L: $${totalPL.toFixed(2)}`;
   raceTrack.appendChild(summary);
 
   playSound();
@@ -130,10 +130,10 @@ function showChart(symbol, element) {
   const rect = element.getBoundingClientRect();
   popup.style.left = rect.left + 20 + "px";
   popup.style.top = rect.top + 30 + "px";
-  popup.innerHTML = \`
-    <iframe src="https://www.tradingview.com/chart/?symbol=\${symbol}" 
+  popup.innerHTML = `
+    <iframe src="https://www.tradingview.com/chart/?symbol=${symbol}" 
       width="100%" height="100%" frameborder="0"></iframe>
-  \`;
+  `;
   popup.style.display = "block";
 }
 
