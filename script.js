@@ -99,11 +99,9 @@ function debug(message) {
   debugBox.innerText = message + "\n" + debugBox.innerText;
 }
 
-let userInteracted = false;
 
-document.addEventListener("click", () => {
-  userInteracted = true;
-});
+let userInteracted = false;
+document.addEventListener("click", () => { userInteracted = true; });
 
 function playSound() {
   if (!userInteracted) return;
@@ -114,4 +112,37 @@ function playSound() {
 function toggleReplay() {
   const controls = document.getElementById("replay-controls");
   controls.style.display = controls.style.display === "none" ? "block" : "none";
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchLastTradingDayGainers() {
+  const results = [];
+
+  for (let i = 0; i < tickers.length; i++) {
+    const symbol = tickers[i];
+    const url = `https://financialmodelingprep.com/api/v3/historical-price-full/${symbol}?serietype=line&timeseries=2&apikey=${apiKey}`;
+    try {
+      const res = await fetch(url);
+      const json = await res.json();
+      const prices = json.historical;
+      if (prices && prices.length >= 2) {
+        const gain = ((prices[0].close - prices[1].close) / prices[1].close * 100).toFixed(2);
+        results.push({
+          ticker: symbol,
+          open: prices[1].close,
+          close: prices[0].close,
+          gain: parseFloat(gain)
+        });
+      }
+    } catch (err) {
+      debug("Error fetching " + symbol + ": " + err);
+    }
+    await delay(1200);  // delay between each request to avoid 429
+  }
+
+  results.sort((a, b) => b.gain - a.gain);
+  renderReplayRace(results.slice(0, 20));
 }
