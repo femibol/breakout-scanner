@@ -99,77 +99,19 @@ function debug(message) {
   debugBox.innerText = message + "\n" + debugBox.innerText;
 }
 
-
-const top3Positions = {};
-const leaderboard = {};
-let currentTop3 = [];
+let userInteracted = false;
 
 document.addEventListener("click", () => {
-  window.userHasClicked = true;
-}, { once: true });
+  userInteracted = true;
+});
 
 function playSound() {
-  if (!window.userHasClicked) return;
+  if (!userInteracted) return;
   const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-  audio.play().catch(e => console.log("Sound error:", e));
+  audio.play().catch(err => console.log("Blocked by browser:", err));
 }
 
 function toggleReplay() {
   const controls = document.getElementById("replay-controls");
   controls.style.display = controls.style.display === "none" ? "block" : "none";
-}
-
-function renderReplayRace(stocks) {
-  const raceTrack = document.getElementById("race-track");
-  raceTrack.innerHTML = "";
-  stocks.sort((a, b) => b.gain - a.gain);
-
-  const topNow = stocks.slice(0, 3).map(s => s.ticker);
-  const newEntry = topNow.filter(t => !currentTop3.includes(t));
-  currentTop3 = topNow;
-
-  stocks.forEach((stock, index) => {
-    if (!top3Positions[stock.ticker]) {
-      top3Positions[stock.ticker] = {
-        entryPrice: stock.open,
-        shares: 5000
-      };
-    }
-
-    if (!leaderboard[stock.ticker]) {
-      leaderboard[stock.ticker] = {
-        maxGain: stock.gain,
-        maxPL: 0,
-        timeTop3: 0
-      };
-    }
-
-    if (index < 3) leaderboard[stock.ticker].timeTop3 += 1;
-    if (stock.gain > leaderboard[stock.ticker].maxGain) leaderboard[stock.ticker].maxGain = stock.gain;
-
-    const entry = top3Positions[stock.ticker].entryPrice;
-    const shares = top3Positions[stock.ticker].shares;
-    const profit = ((stock.close - entry) * shares).toFixed(2);
-    if (parseFloat(profit) > leaderboard[stock.ticker].maxPL) leaderboard[stock.ticker].maxPL = parseFloat(profit);
-
-    const bar = document.createElement("div");
-    bar.className = "race-bar";
-    bar.style.transition = "width 1s ease-out";
-    bar.style.width = "0%";
-    bar.style.background = "#28a745";
-    bar.style.color = "#fff";
-    bar.style.padding = "8px";
-    bar.style.margin = "4px 0";
-    bar.innerText = `${stock.ticker} - ${stock.gain}% | P/L: $${profit}`;
-
-    raceTrack.appendChild(bar);
-    setTimeout(() => {
-      bar.style.width = Math.min(stock.gain, 100) + "%";
-    }, 100);
-  });
-
-  if (newEntry.length > 0) {
-    debug("New stock(s) entered Top 3: " + newEntry.join(", "));
-    playSound();
-  }
 }

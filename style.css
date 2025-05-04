@@ -1,47 +1,61 @@
 
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #1e1e1e;
+  color: #eee;
   padding: 20px;
+  margin: 0;
 }
 h1, h2 {
   text-align: center;
-  color: #333;
+  color: #4fc3f7;
 }
 #filters {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 20px;
 }
 #filters input, #filters select, #filters button {
-  margin: 0 5px;
-  padding: 5px;
+  padding: 6px 12px;
+  background: #2c2c2c;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 5px;
+}
+#filters button:hover {
+  background: #444;
 }
 #scanner-table, #race-track {
   width: 100%;
   margin: 20px auto;
-  background: #fff;
+  background: #2b2b2b;
   border-collapse: collapse;
+  border-radius: 6px;
+  overflow: hidden;
 }
 #scanner-table th, #scanner-table td {
-  padding: 8px;
+  padding: 10px;
   text-align: center;
-  border: 1px solid #ccc;
+  border: 1px solid #444;
 }
 thead {
   background: #333;
   color: #fff;
 }
 tr.breakout {
-  background-color: #d4edda;
+  background-color: #1b5e20;
 }
 tr.pre-breakout {
-  background-color: #fff3cd;
+  background-color: #fbc02d;
 }
 #race-track div {
-  background: #2196F3;
+  background: #4caf50;
   color: #fff;
-  padding: 8px;
+  padding: 10px;
   margin: 5px 0;
   white-space: nowrap;
-  transition: width 0.5s ease;
+  transition: width 0.8s ease;
+  border-radius: 5px;
 }
