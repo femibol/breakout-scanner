@@ -104,9 +104,19 @@ const top3Positions = {};
 const leaderboard = {};
 let currentTop3 = [];
 
+document.addEventListener("click", () => {
+  window.userHasClicked = true;
+}, { once: true });
+
 function playSound() {
-  const audio = new Audio("https://www.soundjay.com/button/beep-07.wav");
-  audio.play();
+  if (!window.userHasClicked) return;
+  const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+  audio.play().catch(e => console.log("Sound error:", e));
+}
+
+function toggleReplay() {
+  const controls = document.getElementById("replay-controls");
+  controls.style.display = controls.style.display === "none" ? "block" : "none";
 }
 
 function renderReplayRace(stocks) {
@@ -163,23 +173,3 @@ function renderReplayRace(stocks) {
     playSound();
   }
 }
-
-function exportSnapshotCSV() {
-  let rows = ["Ticker,Gain,Open,Close,P/L"];
-  Object.keys(top3Positions).forEach(ticker => {
-    const pos = top3Positions[ticker];
-    const lb = leaderboard[ticker] || {};
-    const gain = lb.maxGain || 0;
-    const pl = lb.maxPL || 0;
-    rows.push(`${ticker},${gain},${pos.entryPrice},${pos.entryPrice + (gain / 100 * pos.entryPrice)},${pl.toFixed(2)}`);
-  });
-  const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  link.setAttribute("href", URL.createObjectURL(blob));
-  link.setAttribute("download", "snapshot.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
-
-window.exportSnapshotCSV = exportSnapshotCSV;
