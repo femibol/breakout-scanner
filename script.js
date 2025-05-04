@@ -7,7 +7,7 @@ const mockData = [
   { ticker: "PLTR", open: 10.00, close: 13.50, gain: 35.0 }
 ];
 
-const barColors = ["#ffd700", "#c0c0c0", "#cd7f32", "#4caf50", "#2196f3"];
+const barColors = ["#FFD700", "#C0C0C0", "#CD7F32", "#4CAF50", "#2196F3"];
 
 let userInteracted = false;
 document.addEventListener("click", () => { userInteracted = true; });
@@ -21,16 +21,21 @@ function playSound() {
 function renderMockRace() {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
+
   mockData.sort((a, b) => b.gain - a.gain);
+
+  let totalPL = 0;
 
   mockData.forEach((stock, index) => {
     const entryPrice = stock.open;
     const shares = 5000;
     const pl = ((stock.close - entryPrice) * shares).toFixed(2);
+    totalPL += parseFloat(pl);
+
     const bar = document.createElement("div");
     bar.className = "race-bar";
     bar.style.width = "0%";
-    bar.style.background = barColors[index] || "#607d8b";
+    bar.style.backgroundColor = barColors[index] || "#607d8b";
     bar.style.color = "#fff";
     bar.style.padding = "10px";
     bar.style.margin = "5px 0";
@@ -38,10 +43,18 @@ function renderMockRace() {
     bar.style.transition = "width 1s ease";
     bar.innerText = `${stock.ticker} - Gain: ${stock.gain}% | P/L: $${pl}`;
     raceTrack.appendChild(bar);
+
     setTimeout(() => {
       bar.style.width = Math.min(stock.gain, 100) + "%";
-    }, 200);
+    }, 100);
   });
+
+  const summary = document.createElement("div");
+  summary.style.marginTop = "20px";
+  summary.style.color = "#4fc3f7";
+  summary.style.fontWeight = "bold";
+  summary.innerText = `📈 Total Gain Across All Positions: $${totalPL.toFixed(2)}`;
+  raceTrack.appendChild(summary);
 
   playSound();
 }
