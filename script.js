@@ -1,5 +1,5 @@
 
-const mockData = [
+let raceData = [
   { ticker: "FRGT", open: 1.23, close: 2.10, gain: 70.7 },
   { ticker: "KIDZ", open: 0.88, close: 1.44, gain: 63.6 },
   { ticker: "BBBYQ", open: 0.23, close: 0.36, gain: 56.5 },
@@ -16,15 +16,22 @@ function playSound() {
   audio.play().catch(err => console.log("Blocked by browser:", err));
 }
 
-function renderMockRace() {
+function updateGains() {
+  raceData.forEach(stock => {
+    let fluctuation = (Math.random() - 0.5) * 0.8;  // small +/- fluctuations
+    stock.gain = Math.max(0, stock.gain + fluctuation);
+  });
+}
+
+function renderRace() {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
 
-  mockData.sort((a, b) => b.gain - a.gain);
+  raceData.sort((a, b) => b.gain - a.gain);
 
   let totalPL = 0;
 
-  mockData.forEach((stock, index) => {
+  raceData.forEach((stock, index) => {
     const entryPrice = stock.open;
     const shares = 5000;
     const pl = ((stock.close - entryPrice) * shares).toFixed(2);
@@ -33,23 +40,23 @@ function renderMockRace() {
     const row = document.createElement("div");
     row.className = "race-row";
 
+    const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
     const label = document.createElement("div");
     label.className = "race-label";
-    const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
     label.innerHTML = `<a href="https://www.tradingview.com/chart/?symbol=${tvSymbol}" 
-      target="_blank" rel="noopener noreferrer">${stock.ticker}</a> | ${stock.gain}% | $${pl}`;
+      target="_blank" rel="noopener noreferrer">${stock.ticker}</a> | ${stock.gain.toFixed(1)}% | $${pl}`;
 
     const bar = document.createElement("div");
     bar.className = "race-bar";
-    bar.style.width = "0%";
+    bar.style.width = stock.gain + "%";
+
+    if (index === 0) {
+      label.style.animation = "glow 1.2s ease-in-out infinite alternate";
+    }
 
     row.appendChild(label);
     row.appendChild(bar);
     raceTrack.appendChild(row);
-
-    setTimeout(() => {
-      bar.style.width = Math.min(stock.gain, 100) + "%";
-    }, 100);
   });
 
   const summary = document.createElement("div");
@@ -60,32 +67,12 @@ function renderMockRace() {
   playSound();
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  renderMockRace();
-});
-
-
-let refreshInterval = 30 * 1000; // 30 seconds
-
-function applyTopGlow() {
-  const labels = document.querySelectorAll(".race-label a");
-  labels.forEach((link, i) => {
-    if (i < 3) {
-      link.style.animation = "glow 1.2s ease-in-out infinite alternate";
-    } else {
-      link.style.animation = "none";
-    }
-  });
-}
-
-function refreshRace() {
-  renderMockRace();
-  applyTopGlow();
-  setTimeout(refreshRace, refreshInterval);
+function animateRace() {
+  updateGains();
+  renderRace();
+  setTimeout(animateRace, 3000); // Update every 3 seconds
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  renderMockRace();
-  applyTopGlow();
-  setTimeout(refreshRace, refreshInterval);
+  animateRace();
 });
