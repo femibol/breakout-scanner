@@ -35,7 +35,8 @@ function renderMockRace() {
 
     const label = document.createElement("div");
     label.className = "race-label";
-    label.innerHTML = `<a href="https://www.tradingview.com/symbols/${stock.ticker}/" 
+    const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
+    label.innerHTML = `<a href="https://www.tradingview.com/chart/?symbol=${tvSymbol}" 
       target="_blank" rel="noopener noreferrer">${stock.ticker}</a> | ${stock.gain}% | $${pl}`;
 
     const bar = document.createElement("div");
