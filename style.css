@@ -6,7 +6,7 @@ body {
   margin: 0;
   padding: 20px;
 }
-h1 {
+h1, h2 {
   text-align: center;
   color: #4fc3f7;
 }
@@ -40,8 +40,7 @@ h1 {
 }
 .race-bar {
   height: 32px;
-  background: linear-gradient(to right, #43e97b, #38f9d7);
-  transition: width 1s ease-out;
+  transition: width 0.6s ease-in-out;
 }
 .total-gain {
   margin-top: 25px;
@@ -54,8 +53,6 @@ h1 {
   border-radius: 6px;
   box-shadow: 0 0 6px #4caf50;
 }
-
-
 @keyframes glow {
   from {
     text-shadow: 0 0 5px #4fc3f7, 0 0 10px #4fc3f7, 0 0 15px #2196f3;
