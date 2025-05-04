@@ -41,9 +41,14 @@ function renderMockRace() {
     `);
 
     const label = document.createElement("div");
-    label.textContent = `${stock.ticker} | ${stock.gain}% | $${pl}`;
+    label.innerHTML = \`<a href="https://www.tradingview.com/symbols/\${stock.ticker}/" target="_blank" rel="noopener noreferrer" style="
+      color: #4fc3f7;
+      text-decoration: none;
+      font-weight: bold;
+    ">\${stock.ticker}</a> | \${stock.gain}% | \$\${pl}\`;
+
     label.setAttribute("style", `
-      width: 120px;
+      width: 160px;
       padding: 10px;
       font-weight: 600;
       font-family: monospace;
@@ -57,7 +62,7 @@ function renderMockRace() {
     bar.setAttribute("style", `
       width: 0%;
       height: 32px;
-      background: linear-gradient(90deg, #4caf50, #2196f3);
+      background: linear-gradient(90deg, #66bb6a, #42a5f5);
       transition: width 1s ease;
     `);
 
@@ -82,7 +87,7 @@ function renderMockRace() {
     border-radius: 6px;
     box-shadow: 0 0 6px #4caf50;
   `);
-  summary.innerText = `📈 Total Realized P/L: $${totalPL.toFixed(2)}`;
+  summary.innerText = \`📈 Total Realized P/L: \$\${totalPL.toFixed(2)}\`;
   raceTrack.appendChild(summary);
 
   playSound();
