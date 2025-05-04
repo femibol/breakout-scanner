@@ -63,3 +63,29 @@ function renderMockRace() {
 document.addEventListener("DOMContentLoaded", () => {
   renderMockRace();
 });
+
+
+let refreshInterval = 30 * 1000; // 30 seconds
+
+function applyTopGlow() {
+  const labels = document.querySelectorAll(".race-label a");
+  labels.forEach((link, i) => {
+    if (i < 3) {
+      link.style.animation = "glow 1.2s ease-in-out infinite alternate";
+    } else {
+      link.style.animation = "none";
+    }
+  });
+}
+
+function refreshRace() {
+  renderMockRace();
+  applyTopGlow();
+  setTimeout(refreshRace, refreshInterval);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderMockRace();
+  applyTopGlow();
+  setTimeout(refreshRace, refreshInterval);
+});

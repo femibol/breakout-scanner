@@ -54,3 +54,13 @@ h1 {
   border-radius: 6px;
   box-shadow: 0 0 6px #4caf50;
 }
+
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px #4fc3f7, 0 0 10px #4fc3f7, 0 0 15px #2196f3;
+  }
+  to {
+    text-shadow: 0 0 10px #81d4fa, 0 0 20px #03a9f4, 0 0 30px #00bcd4;
+  }
+}
