@@ -33,14 +33,17 @@ function renderMockRace() {
     totalPL += parseFloat(pl);
 
     const bar = document.createElement("div");
-    bar.className = "race-bar";
-    bar.style.width = "0%";
-    bar.style.backgroundColor = barColors[index] || "#607d8b";
-    bar.style.color = "#fff";
-    bar.style.padding = "10px";
-    bar.style.margin = "5px 0";
-    bar.style.borderRadius = "5px";
-    bar.style.transition = "width 1s ease";
+    bar.setAttribute("style", `
+      width: 0%;
+      background-color: ${barColors[index] || "#607d8b"};
+      color: #fff;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+      transition: width 1s ease;
+      font-weight: bold;
+      font-family: monospace;
+    `);
     bar.innerText = `${stock.ticker} - Gain: ${stock.gain}% | P/L: $${pl}`;
     raceTrack.appendChild(bar);
 
@@ -50,9 +53,13 @@ function renderMockRace() {
   });
 
   const summary = document.createElement("div");
-  summary.style.marginTop = "20px";
-  summary.style.color = "#4fc3f7";
-  summary.style.fontWeight = "bold";
+  summary.setAttribute("style", `
+    margin-top: 20px;
+    color: #4fc3f7;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: sans-serif;
+  `);
   summary.innerText = `📈 Total Gain Across All Positions: $${totalPL.toFixed(2)}`;
   raceTrack.appendChild(summary);
 
