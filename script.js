@@ -1,37 +1,36 @@
 
-let raceData = [
-  { ticker: "FRGT", open: 1.23, close: 2.10, gain: 70.7 },
-  { ticker: "KIDZ", open: 0.88, close: 1.44, gain: 63.6 },
-  { ticker: "BBBYQ", open: 0.23, close: 0.36, gain: 56.5 },
-  { ticker: "AMC", open: 3.50, close: 5.10, gain: 45.7 },
-  { ticker: "PLTR", open: 10.00, close: 13.50, gain: 35.0 }
-];
-
 let userInteracted = false;
 document.addEventListener("click", () => { userInteracted = true; });
 
 function playSound() {
   if (!userInteracted) return;
   const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-  audio.play().catch(err => console.log("Blocked by browser:", err));
+  audio.play().catch(err => console.log("Sound error:", err));
 }
 
-function updateGains() {
-  raceData.forEach(stock => {
-    let fluctuation = (Math.random() - 0.5) * 0.8;  // small +/- fluctuations
-    stock.gain = Math.max(0, stock.gain + fluctuation);
-  });
+function fetchAndRenderRace() {
+  fetch("https://sever-cyc3.onrender.com/race-feed")
+    .then(res => res.json())
+    .then(data => {
+      if (!data || data.length === 0) {
+        console.log("No race data received.");
+        return;
+      }
+      renderRace(data);
+    })
+    .catch(err => {
+      console.error("Race fetch error:", err);
+    });
 }
 
-function renderRace() {
+function renderRace(data) {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
 
-  raceData.sort((a, b) => b.gain - a.gain);
-
+  data.sort((a, b) => b.gain - a.gain);
   let totalPL = 0;
 
-  raceData.forEach((stock, index) => {
+  data.forEach((stock, index) => {
     const entryPrice = stock.open;
     const shares = 5000;
     const pl = ((stock.close - entryPrice) * shares).toFixed(2);
@@ -40,9 +39,9 @@ function renderRace() {
     const row = document.createElement("div");
     row.className = "race-row";
 
-    const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
     const label = document.createElement("div");
     label.className = "race-label";
+    const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
     label.innerHTML = `<a href="https://www.tradingview.com/chart/?symbol=${tvSymbol}" 
       target="_blank" rel="noopener noreferrer">${stock.ticker}</a> | ${stock.gain.toFixed(1)}% | $${pl}`;
 
@@ -67,12 +66,6 @@ function renderRace() {
   playSound();
 }
 
-function animateRace() {
-  updateGains();
-  renderRace();
-  setTimeout(animateRace, 3000); // Update every 3 seconds
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  animateRace();
-});
+// Auto-refresh every 5 seconds
+setInterval(fetchAndRenderRace, 5000);
+document.addEventListener("DOMContentLoaded", fetchAndRenderRace);
