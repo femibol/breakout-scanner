@@ -6,21 +6,21 @@ let replayList = [];
 let replayIndex = 0;
 let replayInterval = null;
 
-document.addEventListener("click", () => { userInteracted = true; });
+document.addEventListener("click", function () { userInteracted = true; });
 
 function playSound() {
   if (!userInteracted) return;
   const audio = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
-  audio.play().catch(err => console.log("Sound error:", err));
+  audio.play().catch(function (err) { console.log("Sound error:", err); });
 }
 
 function fetchReplayList() {
   fetch("https://sever-cyc3.onrender.com/replays")
-    .then(res => res.json())
-    .then(replays => {
+    .then(function (res) { return res.json(); })
+    .then(function (replays) {
       replayList = replays;
       const selector = document.getElementById("replay-selector");
-      replays.forEach(ts => {
+      replays.forEach(function (ts) {
         const opt = document.createElement("option");
         opt.value = ts;
         opt.text = ts;
@@ -32,25 +32,25 @@ function fetchReplayList() {
 function fetchAndRenderRace() {
   const url = currentMode === "live"
     ? "https://sever-cyc3.onrender.com/race-feed"
-    : `https://sever-cyc3.onrender.com/replay/${currentMode}`;
+    : "https://sever-cyc3.onrender.com/replay/" + currentMode;
 
   fetch(url)
-    .then(res => res.json())
-    .then(data => {
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
       if (!data || data.length === 0) return;
       renderRace(data);
     })
-    .catch(err => console.error("Race fetch error:", err));
+    .catch(function (err) { console.error("Race fetch error:", err); });
 }
 
 function renderRace(data) {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
 
-  data.sort((a, b) => b.gain - a.gain);
+  data.sort(function (a, b) { return b.gain - a.gain; });
   let totalPL = 0;
 
-  data.forEach((stock, index) => {
+  data.forEach(function (stock, index) {
     const entryPrice = stock.open;
     const shares = 5000;
     const pl = ((stock.close - entryPrice) * shares).toFixed(2);
@@ -59,22 +59,22 @@ function renderRace(data) {
     const row = document.createElement("div");
     row.className = "race-row";
 
-    const tvSymbol = `NASDAQ:${stock.ticker.toUpperCase()}`;
+    const tvSymbol = "NASDAQ:" + stock.ticker.toUpperCase();
     const label = document.createElement("div");
     label.className = "race-label";
-    label.innerHTML = `
-      <span onmouseover="showChart('${tvSymbol}', this)" onmouseout="hideChart()">
-        <a href="https://www.tradingview.com/chart/?symbol=${tvSymbol}" 
-        target="_blank" rel="noopener noreferrer">${stock.ticker}</a>
-      </span>
-      | ${stock.gain.toFixed(1)}% | $${pl}
-    `;
+
+    const html = '<span onmouseover="showChart(\'' + tvSymbol + '\', this)" onmouseout="hideChart()">' +
+                 '<a href="https://www.tradingview.com/chart/?symbol=' + tvSymbol + '" ' +
+                 'target="_blank" rel="noopener noreferrer">' + stock.ticker + '</a></span>' +
+                 ' | ' + stock.gain.toFixed(1) + '% | $' + pl;
+
+    label.innerHTML = html;
 
     const bar = document.createElement("div");
     bar.className = "race-bar";
     bar.style.width = stock.gain + "%";
 
-    const prev = previousGains[stock.ticker] ?? stock.gain;
+    const prev = previousGains[stock.ticker] !== undefined ? previousGains[stock.ticker] : stock.gain;
     const delta = stock.gain - prev;
     previousGains[stock.ticker] = stock.gain;
 
@@ -94,7 +94,7 @@ function renderRace(data) {
 
   const summary = document.createElement("div");
   summary.className = "total-gain";
-  summary.innerText = `📈 Total Realized P/L: $${totalPL.toFixed(2)}`;
+  summary.innerText = "📈 Total Realized P/L: $" + totalPL.toFixed(2);
   raceTrack.appendChild(summary);
 
   playSound();
@@ -128,12 +128,10 @@ function showChart(symbol, element) {
   }
 
   const rect = element.getBoundingClientRect();
-  popup.style.left = rect.left + 20 + "px";
-  popup.style.top = rect.top + 30 + "px";
-  popup.innerHTML = `
-    <iframe src="https://www.tradingview.com/chart/?symbol=${symbol}" 
-      width="100%" height="100%" frameborder="0"></iframe>
-  `;
+  popup.style.left = (rect.left + 20) + "px";
+  popup.style.top = (rect.top + 30) + "px";
+  popup.innerHTML = '<iframe src="https://www.tradingview.com/chart/?symbol=' + symbol + '" ' +
+                    'width="100%" height="100%" frameborder="0"></iframe>';
   popup.style.display = "block";
 }
 
@@ -142,16 +140,16 @@ function hideChart() {
   if (popup) popup.style.display = "none";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
   fetchReplayList();
   fetchAndRenderRace();
 
-  setInterval(() => {
+  setInterval(function () {
     if (currentMode === "live") fetchAndRenderRace();
   }, 5000);
 
   const selector = document.getElementById("replay-selector");
-  selector.addEventListener("change", () => {
+  selector.addEventListener("change", function () {
     currentMode = selector.value;
     if (currentMode === "live") {
       clearInterval(replayInterval);
