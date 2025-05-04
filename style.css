@@ -61,3 +61,20 @@ h1, h2 {
     text-shadow: 0 0 10px #81d4fa, 0 0 20px #03a9f4, 0 0 30px #00bcd4;
   }
 }
+
+@media (max-width: 600px) {
+  #race-track {
+    padding: 10px;
+  }
+  .race-label {
+    width: 140px;
+    font-size: 12px;
+    padding: 8px;
+  }
+  .race-bar {
+    height: 26px;
+  }
+  .total-gain {
+    font-size: 16px;
+  }
+}

@@ -2,6 +2,9 @@
 let previousGains = {};
 let userInteracted = false;
 let currentMode = "live";
+let replayList = [];
+let replayIndex = 0;
+let replayInterval = null;
 
 document.addEventListener("click", () => { userInteracted = true; });
 
@@ -15,6 +18,7 @@ function fetchReplayList() {
   fetch("https://sever-cyc3.onrender.com/replays")
     .then(res => res.json())
     .then(replays => {
+      replayList = replays;
       const selector = document.getElementById("replay-selector");
       replays.forEach(ts => {
         const opt = document.createElement("option");
@@ -96,6 +100,15 @@ function renderRace(data) {
   playSound();
 }
 
+function autoStepReplay() {
+  if (!replayList.length) return;
+  if (replayIndex >= replayList.length) replayIndex = 0;
+  currentMode = replayList[replayIndex];
+  document.getElementById("replay-selector").value = currentMode;
+  fetchAndRenderRace();
+  replayIndex++;
+}
+
 function showChart(symbol, element) {
   let popup = document.getElementById("chart-popup");
   if (!popup) {
@@ -103,7 +116,7 @@ function showChart(symbol, element) {
     popup.id = "chart-popup";
     popup.style.position = "absolute";
     popup.style.zIndex = 1000;
-    popup.style.width = "380px";
+    popup.style.width = "360px";
     popup.style.height = "300px";
     popup.style.border = "2px solid #333";
     popup.style.background = "#111";
@@ -132,13 +145,20 @@ function hideChart() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchReplayList();
   fetchAndRenderRace();
+
   setInterval(() => {
     if (currentMode === "live") fetchAndRenderRace();
   }, 5000);
 
   const selector = document.getElementById("replay-selector");
   selector.addEventListener("change", () => {
-    currentMode = selector.value === "live" ? "live" : selector.value;
-    fetchAndRenderRace();
+    currentMode = selector.value;
+    if (currentMode === "live") {
+      clearInterval(replayInterval);
+      fetchAndRenderRace();
+    } else {
+      replayIndex = replayList.indexOf(currentMode);
+      replayInterval = setInterval(autoStepReplay, 5000);
+    }
   });
 });
