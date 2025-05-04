@@ -19,6 +19,7 @@ function playSound() {
 function renderMockRace() {
   const raceTrack = document.getElementById("race-track");
   raceTrack.innerHTML = "";
+
   mockData.sort((a, b) => b.gain - a.gain);
 
   let totalPL = 0;
@@ -30,41 +31,16 @@ function renderMockRace() {
     totalPL += parseFloat(pl);
 
     const row = document.createElement("div");
-    row.setAttribute("style", `
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      background-color: #1f1f1f;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 4px rgba(0,0,0,0.5);
-    `);
+    row.className = "race-row";
 
     const label = document.createElement("div");
-    label.innerHTML = \`<a href="https://www.tradingview.com/symbols/\${stock.ticker}/" target="_blank" rel="noopener noreferrer" style="
-      color: #4fc3f7;
-      text-decoration: none;
-      font-weight: bold;
-    ">\${stock.ticker}</a> | \${stock.gain}% | \$\${pl}\`;
-
-    label.setAttribute("style", `
-      width: 160px;
-      padding: 10px;
-      font-weight: 600;
-      font-family: monospace;
-      font-size: 14px;
-      color: #cfcfcf;
-      background: #2c2c2c;
-    `);
+    label.className = "race-label";
+    label.innerHTML = `<a href="https://www.tradingview.com/symbols/${stock.ticker}/" 
+      target="_blank" rel="noopener noreferrer">${stock.ticker}</a> | ${stock.gain}% | $${pl}`;
 
     const bar = document.createElement("div");
-    bar.textContent = "";
-    bar.setAttribute("style", `
-      width: 0%;
-      height: 32px;
-      background: linear-gradient(90deg, #66bb6a, #42a5f5);
-      transition: width 1s ease;
-    `);
+    bar.className = "race-bar";
+    bar.style.width = "0%";
 
     row.appendChild(label);
     row.appendChild(bar);
@@ -76,18 +52,8 @@ function renderMockRace() {
   });
 
   const summary = document.createElement("div");
-  summary.setAttribute("style", `
-    margin-top: 25px;
-    background: #292929;
-    padding: 10px 20px;
-    font-size: 18px;
-    font-family: sans-serif;
-    color: #8de88d;
-    font-weight: bold;
-    border-radius: 6px;
-    box-shadow: 0 0 6px #4caf50;
-  `);
-  summary.innerText = \`📈 Total Realized P/L: \$\${totalPL.toFixed(2)}\`;
+  summary.className = "total-gain";
+  summary.innerText = `📈 Total Realized P/L: $${totalPL.toFixed(2)}`;
   raceTrack.appendChild(summary);
 
   playSound();

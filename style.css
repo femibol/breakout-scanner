@@ -1,29 +1,56 @@
 
 body {
-  background: #111;
-  color: #eee;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
   margin: 0;
   padding: 20px;
 }
-h1, h2 {
-  color: #4fc3f7;
+h1 {
   text-align: center;
+  color: #4fc3f7;
 }
 #race-track {
   max-width: 900px;
-  margin: 30px auto;
+  margin: 0 auto;
+  padding-top: 20px;
 }
-button {
-  background-color: #2c2c2c;
-  border: 1px solid #555;
-  color: #fff;
-  padding: 8px 16px;
-  margin: 10px;
-  cursor: pointer;
+.race-row {
+  display: flex;
+  align-items: center;
+  background: #1e1e1e;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 6px rgba(0,0,0,0.4);
+}
+.race-label {
+  width: 180px;
+  padding: 10px;
+  background: #2b2b2b;
+  font-weight: bold;
   font-size: 14px;
-  border-radius: 5px;
 }
-button:hover {
-  background-color: #3f3f3f;
+.race-label a {
+  color: #4fc3f7;
+  text-decoration: none;
+}
+.race-label a:hover {
+  text-decoration: underline;
+}
+.race-bar {
+  height: 32px;
+  background: linear-gradient(to right, #43e97b, #38f9d7);
+  transition: width 1s ease-out;
+}
+.total-gain {
+  margin-top: 25px;
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 18px;
+  background: #222;
+  color: #8de88d;
+  font-weight: bold;
+  border-radius: 6px;
+  box-shadow: 0 0 6px #4caf50;
 }
